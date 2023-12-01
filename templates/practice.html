@@ -1,0 +1,56 @@
+<br>
+<table class="center shadow" style="width: 100%;" cellpadding="30%">
+    <tr style="height:180px;">
+        <td>
+            <h5 id="question"></h5>
+        </td>
+    </tr>
+    <tr style="height:180px;" class="center">
+        <td>
+            <p id="answer"></p>
+        </td>
+    </tr>
+</table>
+<br>
+<div class="center">
+    <button onclick="showBack()" class='btn btn-primary ml-0'>Show Answer</button>
+    <button onclick="prev()" class='btn btn-primary ml-0'>Previous Card</button>
+    <button onclick="next()" class='btn btn-primary ml-0'>Next Card</button>
+</div>
+<br>
+
+
+
+<script>
+    var qIndex = 0;
+    var questions = JSON.parse('{{data | tojson}}');
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+    function showFront() {
+        document.getElementById("answer").innerText = "";
+        document.getElementById("question").innerText = questions[qIndex]["question"];
+    }
+    function showBack() {
+        document.getElementById("answer").innerText = questions[qIndex]["answer"];
+    }
+    function next() {
+        if(qIndex < questions.length - 1) {
+            qIndex++;
+        }
+        showFront();
+    }
+    function prev() {
+        if(qIndex > 0) {
+            qIndex--;
+        }
+        showFront();
+    }
+    shuffleArray(questions);
+    showFront();
+</script>

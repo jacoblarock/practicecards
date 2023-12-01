@@ -1,0 +1,53 @@
+<div>
+    <form id="main" method='post' action='/save_data'></form>
+</div>
+<script>
+    var questions = JSON.parse('{{data | tojson}}');
+    var page = document.getElementById("main");
+    var i = 0;
+    for(i = 0; i < questions.length; i++){
+        var question = document.createElement("div");
+        question.setAttribute("id", `question${i}`)
+        question.innerHTML += `<h3>Question ${i+1}:</h3>`;
+        question.innerHTML += "<p>question: ";
+        question.innerHTML += `<textarea rows='5' style='width: 100%;' name='q-${i}'>${questions[i].question}</textarea>`;
+        question.innerHTML += "</p>";
+        question.innerHTML += "<p>answer: ";
+        question.innerHTML += `<textarea rows='5' style='width: 100%;' name='a-${i}'>${questions[i].answer}</textarea>`;
+        question.innerHTML += "</p>";
+        question.innerHTML += `<button onclick='removeQuestion(${i})' class='btn btn-danger ml-0'>remove</button>`
+        page.appendChild(question);
+    };
+    var buttons = document.createElement("div");
+    buttons.setAttribute("id", "buttons")
+    buttons.innerHTML += "<br><button id='save' type='submit' class='btn btn-primary ml-0'>save</button>";
+    buttons.innerHTML += "<button id='add' onclick='addQuestion()' class='btn btn-primary ml-0'>add new question</button>";
+    page.appendChild(buttons)
+    
+    function addQuestion() {
+
+        document.getElementById("buttons").remove();
+
+        var question = document.createElement("div");
+        question.innerHTML += `<h3>Question ${i+1}:</h3>`;
+        question.innerHTML += "<p>question: ";
+        question.innerHTML += `<textarea rows='5' style='width: 100%;' name='q-${i}'></textarea>`;
+        question.innerHTML += "</p>";
+        question.innerHTML += "<p>answer: ";
+        question.innerHTML += `<textarea rows='5' style='width: 100%;' name='a-${i}'></textarea>`;
+        question.innerHTML += "</p>";
+        question.innerHTML += `<button onclick='removeQuestion(${i})' class='btn btn-danger ml-0'>remove</button>`
+        page.appendChild(question);
+
+        i++;
+        var buttons = document.createElement("div");
+        buttons.setAttribute("id", "buttons");
+        buttons.innerHTML += "<br><button id='save' type='submit' class='btn btn-primary ml-0'>save</button>";
+        buttons.innerHTML += "<button id='add' onclick='addQuestion()' class='btn btn-primary ml-0'>add new question</button>";
+        page.appendChild(buttons);
+    }
+
+    function removeQuestion(number) {
+        document.getElementById(`question${number}`).remove();
+    }
+</script>
