@@ -2,8 +2,11 @@
     <form id="main" method='post' action='/save_data'></form>
 </div>
 <script>
+    // get question data from python
     var questions = JSON.parse('{{data | tojson}}');
+    // get page element
     var page = document.getElementById("main");
+    // create form from question data
     var i = 0;
     for(i = 0; i < questions.length; i++){
         var question = document.createElement("div");
@@ -24,6 +27,7 @@
     buttons.innerHTML += "<button id='add' onclick='addQuestion()' class='btn btn-primary ml-0'>add new question</button>";
     page.appendChild(buttons)
     
+    // add new empty question
     function addQuestion() {
 
         document.getElementById("buttons").remove();
@@ -47,6 +51,7 @@
         page.appendChild(buttons);
     }
 
+    // remove question on click of remove button
     function removeQuestion(number) {
         document.getElementById(`question${number}`).remove();
     }
