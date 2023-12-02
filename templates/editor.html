@@ -12,8 +12,10 @@
     // generate question from question data
     function generateQuestion(qNumber, type, question, answer) {
         var questionElem = document.createElement("div");
+        typeTest = type == "test" ? "selected" : "";
+        typeFlashcard = type == "flashcard" ? "selected" : "";
         questionElem.innerHTML += `<h3>Question ${qNumber+1}:</h3>`;
-        questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}"><option value="flashcard">Flashcard</option><option value="test">Test</option></select>`;
+        questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}"><option value="flashcard" ${typeFlashcard}>Flashcard</option><option value="test" ${typeTest}>Test</option></select>`;
         questionElem.innerHTML += "<p>question: ";
         questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='q-${qNumber}'>${question}</textarea>`;
         questionElem.innerHTML += "</p>";
