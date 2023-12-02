@@ -13,15 +13,16 @@ footer = open("templates/footer.html").read()
 filename = ""
 questions = []
 
-# test comment
 # remove empty questions and replace newlines for json
 def clean_questions():
     global questions
     for question in questions:
         question["question"] = question["question"].replace("\r\n", "\\n")
         question["answer"] = question["answer"].replace("\r\n", "\\n")
-        if question["question"] == "" and question["answer"] == "":
+        if question["type"] == "flashcard" and question["question"] == "" and question["answer"] == "":
             questions.remove({"type": "flashcard", "question": "", "answer": ""})
+        if question["type"] == "test" and question["question"] == "" and question["answer"] == "":
+            questions.remove({"type": "test", "question": "", "answer": ""})
 
 # index page
 @app.route("/")
@@ -107,7 +108,7 @@ def create():
     page += "<button type='submit' class='btn btn-primary ml-0'>create</button>"
     return page + footer
 
-# create a new set of cards
+# create a new local file for the set of cards
 @app.route("/create_file", methods=["POST"])
 def create_file():
     if request.method == "POST":
