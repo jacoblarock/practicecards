@@ -31,7 +31,12 @@
             splitAnswer = answerText.split("\n");
             if (document.getElementById(`t-${qNumber}`).value == "test") {
                 for (let qindex = 1; qindex < splitQuestion.length; qindex++) {
-                    splitQuestion[qindex] = "&#9745; " + splitQuestion[qindex];
+                    if (splitQuestion[qindex].length == 1) {
+                        splitQuestion.splice(qindex, 1);
+                    }
+                    else if (!splitQuestion[qindex].startsWith("☑ ")) {
+                        splitQuestion[qindex] = "☑ " + splitQuestion[qindex];
+                    }
                 }
                 document.getElementById(`q-${qNumber}`).value = splitQuestion.join("\n");
                 console.log(questionText);
