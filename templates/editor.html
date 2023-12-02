@@ -10,7 +10,7 @@
     var i = 0;
 
     // generate question from question data
-    function generateQuestion(qNumber, question, answer) {
+    function generateQuestion(qNumber, type, question, answer) {
         var questionElem = document.createElement("div");
         questionElem.innerHTML += `<h3>Question ${qNumber+1}:</h3>`;
         questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}"><option value="flashcard">Flashcard</option><option value="test">Test</option></select>`;
@@ -36,7 +36,7 @@
 
     // display questions in question data on page
     for(i = 0; i < questions.length; i++){
-        generateQuestion(i, questions[i].question, questions[i].answer);
+        generateQuestion(i, questions[i].type, questions[i].question, questions[i].answer);
     };
 
     generateButtons();
@@ -45,7 +45,7 @@
     function addQuestion() {
 
         document.getElementById("buttons").remove();
-        generateQuestion(i, "", "");
+        generateQuestion(i, "flashcard", "", "");
 
         i++;
         generateButtons();
