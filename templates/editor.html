@@ -1,5 +1,5 @@
 <div>
-    <form id="main" method='post' action='/save_data'></form>
+    <form id="main" class="form-group" method='post' action='/save_data'></form>
 </div>
 <script>
     // get question data from python
@@ -15,12 +15,13 @@
         questionElem.innerHTML += `<h3>Question ${qNumber+1}:</h3>`;
         questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}"><option value="flashcard">Flashcard</option><option value="test">Test</option></select>`;
         questionElem.innerHTML += "<p>question: ";
-        questionElem.innerHTML += `<textarea rows='5' style='width: 100%;' name='q-${qNumber}'>${question}</textarea>`;
+        questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='q-${qNumber}'>${question}</textarea>`;
         questionElem.innerHTML += "</p>";
         questionElem.innerHTML += "<p>answer: ";
-        questionElem.innerHTML += `<textarea rows='5' style='width: 100%;' name='a-${qNumber}'>${answer}</textarea>`;
+        questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='a-${qNumber}'>${answer}</textarea>`;
         questionElem.innerHTML += "</p>";
         questionElem.innerHTML += `<button onclick='removeQuestion(${qNumber})' class='btn btn-danger ml-0'>remove</button>`
+        questionElem.innerHTML += "<br><br>";
         page.appendChild(questionElem);
     }
 
