@@ -15,15 +15,28 @@
         typeTest = type == "test" ? "selected" : "";
         typeFlashcard = type == "flashcard" ? "selected" : "";
         questionElem.innerHTML += `<h3>Question ${qNumber+1}:</h3>`;
-        questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}"><option value="flashcard" ${typeFlashcard}>Flashcard</option><option value="test" ${typeTest}>Test</option></select>`;
+        questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}" id='t-${qNumber}'><option value="flashcard" ${typeFlashcard}>Flashcard</option><option value="test" ${typeTest}>Test</option></select>`;
         questionElem.innerHTML += "<p>question: ";
-        questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='q-${qNumber}'>${question}</textarea>`;
+        questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='q-${qNumber}' id='q-${qNumber}'>${question}</textarea>`;
         questionElem.innerHTML += "</p>";
         questionElem.innerHTML += "<p>answer: ";
-        questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='a-${qNumber}'>${answer}</textarea>`;
+        questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='a-${qNumber}' id='a-${qNumber}'>${answer}</textarea>`;
         questionElem.innerHTML += "</p>";
         questionElem.innerHTML += `<button onclick='removeQuestion(${qNumber})' class='btn btn-danger ml-0'>remove</button>`
         questionElem.innerHTML += "<br><br>";
+        questionElem.addEventListener("keyup", event => {
+            questionText = document.getElementById(`q-${qNumber}`).value;
+            answerText = document.getElementById(`a-${qNumber}`).value;
+            splitQuestion = questionText.split("\n");
+            splitAnswer = answerText.split("\n");
+            if (document.getElementById(`t-${qNumber}`).value == "test") {
+                for (let qindex = 1; qindex < splitQuestion.length; qindex++) {
+                    splitQuestion[qindex] = "&#9745; " + splitQuestion[qindex];
+                }
+                document.getElementById(`q-${qNumber}`).value = splitQuestion.join("\n");
+                console.log(questionText);
+            }
+        });
         page.appendChild(questionElem);
     }
 
