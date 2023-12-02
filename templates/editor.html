@@ -8,47 +8,45 @@
     var page = document.getElementById("main");
     // create form from question data
     var i = 0;
+
+    // generate question from question data
+    function generateQuestion(qNumber, question, answer) {
+        var questionElem = document.createElement("div");
+        questionElem.innerHTML += `<h3>Question ${qNumber+1}:</h3>`;
+        questionElem.innerHTML += "<p>question: ";
+        questionElem.innerHTML += `<textarea rows='5' style='width: 100%;' name='q-${qNumber}'>${question}</textarea>`;
+        questionElem.innerHTML += "</p>";
+        questionElem.innerHTML += "<p>answer: ";
+        questionElem.innerHTML += `<textarea rows='5' style='width: 100%;' name='a-${qNumber}'>${answer}</textarea>`;
+        questionElem.innerHTML += "</p>";
+        questionElem.innerHTML += `<button onclick='removeQuestion(${qNumber})' class='btn btn-danger ml-0'>remove</button>`
+        page.appendChild(questionElem);
+    }
+
+    // generate buttons to add new question and save data
+    function generateButtons() {
+        var buttons = document.createElement("div");
+        buttons.setAttribute("id", "buttons")
+        buttons.innerHTML += "<br><button id='save' type='submit' class='btn btn-primary ml-0'>save</button>";
+        buttons.innerHTML += "<button id='add' onclick='addQuestion()' class='btn btn-primary ml-0'>add new question</button>";
+        page.appendChild(buttons)
+    }
+
+    // display questions in question data on page
     for(i = 0; i < questions.length; i++){
-        var question = document.createElement("div");
-        question.setAttribute("id", `question${i}`)
-        question.innerHTML += `<h3>Question ${i+1}:</h3>`;
-        question.innerHTML += "<p>question: ";
-        question.innerHTML += `<textarea rows='5' style='width: 100%;' name='q-${i}'>${questions[i].question}</textarea>`;
-        question.innerHTML += "</p>";
-        question.innerHTML += "<p>answer: ";
-        question.innerHTML += `<textarea rows='5' style='width: 100%;' name='a-${i}'>${questions[i].answer}</textarea>`;
-        question.innerHTML += "</p>";
-        question.innerHTML += `<button onclick='removeQuestion(${i})' class='btn btn-danger ml-0'>remove</button>`
-        page.appendChild(question);
+        generateQuestion(i, questions[i].question, questions[i].answer);
     };
-    var buttons = document.createElement("div");
-    buttons.setAttribute("id", "buttons")
-    buttons.innerHTML += "<br><button id='save' type='submit' class='btn btn-primary ml-0'>save</button>";
-    buttons.innerHTML += "<button id='add' onclick='addQuestion()' class='btn btn-primary ml-0'>add new question</button>";
-    page.appendChild(buttons)
+
+    generateButtons();
     
     // add new empty question
     function addQuestion() {
 
         document.getElementById("buttons").remove();
-
-        var question = document.createElement("div");
-        question.innerHTML += `<h3>Question ${i+1}:</h3>`;
-        question.innerHTML += "<p>question: ";
-        question.innerHTML += `<textarea rows='5' style='width: 100%;' name='q-${i}'></textarea>`;
-        question.innerHTML += "</p>";
-        question.innerHTML += "<p>answer: ";
-        question.innerHTML += `<textarea rows='5' style='width: 100%;' name='a-${i}'></textarea>`;
-        question.innerHTML += "</p>";
-        question.innerHTML += `<button onclick='removeQuestion(${i})' class='btn btn-danger ml-0'>remove</button>`
-        page.appendChild(question);
+        generateQuestion(i, "", "");
 
         i++;
-        var buttons = document.createElement("div");
-        buttons.setAttribute("id", "buttons");
-        buttons.innerHTML += "<br><button id='save' type='submit' class='btn btn-primary ml-0'>save</button>";
-        buttons.innerHTML += "<button id='add' onclick='addQuestion()' class='btn btn-primary ml-0'>add new question</button>";
-        page.appendChild(buttons);
+        generateButtons();
     }
 
     // remove question on click of remove button
