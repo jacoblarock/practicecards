@@ -78,6 +78,7 @@ def open_editor():
 # open a set of cards  
 @app.route("/open")
 def openset(is_editor):
+    # depending on input, set the action to /editor or /practice
     if is_editor:
         action = "/editor"
     else:
@@ -85,6 +86,7 @@ def openset(is_editor):
     page = header
     files = os.listdir()
     questionsets = []
+    # find all the files with the .data extension
     for file in files:
         if file[-5:] == ".data":
             questionsets.append(file)
