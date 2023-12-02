@@ -13,6 +13,7 @@
     function generateQuestion(qNumber, question, answer) {
         var questionElem = document.createElement("div");
         questionElem.innerHTML += `<h3>Question ${qNumber+1}:</h3>`;
+        questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}"><option value="flashcard">Flashcard</option><option value="test">Test</option></select>`;
         questionElem.innerHTML += "<p>question: ";
         questionElem.innerHTML += `<textarea rows='5' style='width: 100%;' name='q-${qNumber}'>${question}</textarea>`;
         questionElem.innerHTML += "</p>";
