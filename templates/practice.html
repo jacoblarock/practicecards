@@ -2,7 +2,8 @@
 <table class="center shadow" style="width: 100%;" cellpadding="30%">
     <tr style="height:180px;">
         <td>
-            <h5 id="question"></h5>
+            <h5 id="questionHeader"></h5>
+            <p id="questionBody"></p>
         </td>
     </tr>
     <tr style="height:180px;" class="center">
@@ -22,6 +23,9 @@
 
 
 <script>
+    var questionHeader = document.getElementById("questionHeader");
+    var questionBody = document.getElementById("questionBody");
+    var answer = document.getElementById("answer");
     var qIndex = 0;
     // get question data from python
     var questions = JSON.parse('{{data | tojson}}');
@@ -37,12 +41,15 @@
     }
     // show question
     function showFront() {
-        document.getElementById("answer").innerText = "";
-        document.getElementById("question").innerText = questions[qIndex]["question"];
+        var questionType = questions[qIndex]["type"];
+        var currentQuestion = questions[qIndex]["question"].split("\n");
+        answer.innerText = "";
+        questionHeader.innerText = currentQuestion[0];
+        questionBody.innerText = currentQuestion.slice(1).join("\n");
     }
     // show answer
     function showBack() {
-        document.getElementById("answer").innerText = questions[qIndex]["answer"];
+        answer.innerText = questions[qIndex]["answer"];
     }
     // show next question
     function next() {
