@@ -13,6 +13,7 @@ footer = open("templates/footer.html").read()
 filename = ""
 questions = []
 
+# test comment
 # remove empty questions and replace newlines for json
 def clean_questions():
     global questions
