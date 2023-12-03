@@ -57,7 +57,7 @@
             answerText.innerText = "";
             questionBody.innerText = "";
             for (var i = 0; i < choices.length; i++) {
-                choiceHTML += "<input type='checkbox' name='choice' id='" + choices[i] + "'>&nbsp;&nbsp;" + choices[i] + "<br>";
+                choiceHTML += "<input type='checkbox' name='choice' id='" + choices[i].replace("☑ ", "") + "'>&nbsp;&nbsp;" + choices[i].replace("☑ ", "") + "<br>";
             }
             testChoices.innerHTML = choiceHTML;
         }
