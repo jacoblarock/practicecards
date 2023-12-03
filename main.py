@@ -60,14 +60,14 @@ def save_data():
         # get the data from the form and save it to the questions list
         for name in request.form:
             data = request.form[name]
-            while int(name[-1]) >= len(questions):
+            while int(name[2:]) >= len(questions):
                 questions.append({"type": "", "question": "", "answer": ""})
             if name[0] == "t":
-                questions[int(name[-1])]["type"] = data
+                questions[int(name[2:])]["type"] = data
             if name[0] == "q":
-                questions[int(name[-1])]["question"] = data
+                questions[int(name[2:])]["question"] = data
             if name[0] == "a":
-                questions[int(name[-1])]["answer"] = data
+                questions[int(name[2:])]["answer"] = data
         clean_questions()
         print(questions)
         # save the questions to the file
