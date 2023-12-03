@@ -4,6 +4,7 @@
         <td>
             <h5 id="questionHeader"></h5>
             <p id="questionBody"></p>
+            <div id="testChoices"></div>
         </td>
     </tr>
     <tr style="height:180px;" class="center">
@@ -25,7 +26,8 @@
 <script>
     var questionHeader = document.getElementById("questionHeader");
     var questionBody = document.getElementById("questionBody");
-    var answer = document.getElementById("answer");
+    var testChoices = document.getElementById("testChoices");
+    var answerText = document.getElementById("answer");
     var qIndex = 0;
     // get question data from python
     var questions = JSON.parse('{{data | tojson}}');
@@ -43,13 +45,42 @@
     function showFront() {
         var questionType = questions[qIndex]["type"];
         var currentQuestion = questions[qIndex]["question"].split("\n");
-        answer.innerText = "";
-        questionHeader.innerText = currentQuestion[0];
-        questionBody.innerText = currentQuestion.slice(1).join("\n");
+        if (questionType == "flashcard") {
+            testChoices.innerHTML = "";
+            answerText.innerText = "";
+            questionHeader.innerText = currentQuestion[0];
+            questionBody.innerText = currentQuestion.slice(1).join("\n");
+        } else if (questionType == "test") {
+            var choices = currentQuestion.slice(1);
+            var choiceHTML = "";
+            questionHeader.innerText = currentQuestion[0];
+            answerText.innerText = "";
+            questionBody.innerText = "";
+            for (var i = 0; i < choices.length; i++) {
+                choiceHTML += "<input type='checkbox' name='choice' id='" + choices[i] + "'>&nbsp;&nbsp;" + choices[i] + "<br>";
+            }
+            testChoices.innerHTML = choiceHTML;
+        }
     }
     // show answer
     function showBack() {
-        answer.innerText = questions[qIndex]["answer"];
+        var questionType = questions[qIndex]["type"];
+        if (questionType == "flashcard") {
+            answerText.innerText = questions[qIndex]["answer"];
+        } else if (questionType == "test") {
+            var choices = document.getElementsByName("choice");
+            var correct = true;
+            for (var i = 0; i < choices.length; i++) {
+                if (choices[i].checked != questions[qIndex]["answer"].includes(choices[i].id)) {
+                    correct = false;
+                }
+            }
+            if (correct) {
+                answerText.innerText = "Correct!";
+            } else {
+                answerText.innerText = "Incorrect!";
+            }
+        }
     }
     // show next question
     function next() {
