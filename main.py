@@ -14,16 +14,15 @@ filename = ""
 questions = []
 
 # remove empty questions and replace newlines for json
-def clean_questions():
-    global questions
-    for question in questions:
-        question["question"] = question["question"].replace("\r\n", "\\n")
-        question["answer"] = question["answer"].replace("\r\n", "\\n")
-        question["question"] = question["question"].replace("\"", "'")
-        question["answer"] = question["answer"].replace("\"", "\\\"")
-        if question["question"] == "" and question["answer"] == "":
-            questions.remove({"type": "flashcard", "question": "", "answer": ""})
-        print(question)
+def clean_questions(questions):
+    for i in range(len(questions)):
+        questions[i]["question"] = questions[i]["question"].replace("\r\n", "\\n")
+        questions[i]["answer"] = questions[i]["answer"].replace("\r\n", "\\n")
+        questions[i]["question"] = questions[i]["question"].replace("\"", "'")
+        questions[i]["answer"] = questions[i]["answer"].replace("\"", "\\\"")
+        if questions[i]["question"] == "" and questions[i]["answer"] == "":
+            questions.pop(i)
+        print(questions[i])
 
 # index page
 @app.route("/")
@@ -49,7 +48,7 @@ def editor():
         except:
             pass
     # clean the questions for json
-    clean_questions()
+    clean_questions(questions)
     return header + render_template("editor.html", data=questions) + footer
 
 # save the data from the editor page
@@ -110,7 +109,7 @@ def create():
     page += "<button type='submit' class='btn btn-primary ml-0'>create</button>"
     return page + footer
 
-# create a new set of cards
+# create a new local file for the set of cards
 @app.route("/create_file", methods=["POST"])
 def create_file():
     if request.method == "POST":
@@ -132,7 +131,8 @@ def practice():
         filename = request.form["file"]
     with open(filename, "rb") as f:
         questions = pickle.load(f)
-    return header + render_template("practice.html", data=str(questions)) + footer
+    clean_questions(questions)
+    return header + render_template("practice.html", data=questions) + footer
 
 if __name__ == "__main__":
     app.run(debug=True)
