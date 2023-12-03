@@ -19,8 +19,11 @@ def clean_questions():
     for question in questions:
         question["question"] = question["question"].replace("\r\n", "\\n")
         question["answer"] = question["answer"].replace("\r\n", "\\n")
+        question["question"] = question["question"].replace("\"", "'")
+        question["answer"] = question["answer"].replace("\"", "\\\"")
         if question["question"] == "" and question["answer"] == "":
             questions.remove({"type": "flashcard", "question": "", "answer": ""})
+        print(question)
 
 # index page
 @app.route("/")
@@ -64,7 +67,6 @@ def save_data():
                 questions[int(name[2:])]["question"] = data
             if name[0] == "a":
                 questions[int(name[2:])]["answer"] = data
-        clean_questions()
         # save the questions to the file
         with open(filename, "wb") as f:
             pickle.dump(questions, f)
@@ -124,13 +126,13 @@ def open_practice():
     return openset(False)
 
 # practice page, where the user can practice the selected set of cards
-@app.route("/practice", methods=['GET', 'POST'])
+@app.route("/practice", methods=['POST'])
 def practice():
     if request.method == "POST":
         filename = request.form["file"]
     with open(filename, "rb") as f:
         questions = pickle.load(f)
-    return header + render_template("practice.html", data=questions) + footer
+    return header + render_template("practice.html", data=str(questions)) + footer
 
 if __name__ == "__main__":
     app.run(debug=True)
