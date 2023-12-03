@@ -22,7 +22,6 @@ def clean_questions(questions):
         questions[i]["answer"] = questions[i]["answer"].replace("\"", "\\\"")
         if questions[i]["question"] == "" and questions[i]["answer"] == "":
             questions.pop(i)
-        print(questions[i])
 
 # index page
 @app.route("/")
