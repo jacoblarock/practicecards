@@ -52,6 +52,7 @@
             questionBody.innerText = currentQuestion.slice(1).join("\n");
         } else if (questionType == "test") {
             var choices = currentQuestion.slice(1);
+            shuffleArray(choices);
             var choiceHTML = "";
             questionHeader.innerText = currentQuestion[0];
             answerText.innerText = "";
