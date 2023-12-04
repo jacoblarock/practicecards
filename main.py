@@ -22,7 +22,6 @@ def clean_questions(questions):
         questions[i]["answer"] = questions[i]["answer"].replace("\"", "\\\"")
         if questions[i]["question"] == "" and questions[i]["answer"] == "":
             questions.pop(i)
-        print(questions[i])
 
 # index page
 @app.route("/")
@@ -61,7 +60,9 @@ def save_data():
         for name in request.form:
             data = request.form[name]
             while int(name[2:]) >= len(questions):
-                questions.append({"type": "flashcard", "question": "", "answer": ""})
+                questions.append({"type": "", "question": "", "answer": ""})
+            if name[0] == "t":
+                questions[int(name[2:])]["type"] = data
             if name[0] == "q":
                 questions[int(name[2:])]["question"] = data
             if name[0] == "a":
