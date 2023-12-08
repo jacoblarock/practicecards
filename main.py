@@ -13,15 +13,13 @@ footer = open("templates/footer.html").read()
 filename = ""
 questions = []
 
-# remove empty questions and replace newlines for json
+# replace newlines for json
 def clean_questions(questions):
     for i in range(len(questions)):
         questions[i]["question"] = questions[i]["question"].replace("\r\n", "\\n")
         questions[i]["answer"] = questions[i]["answer"].replace("\r\n", "\\n")
         questions[i]["question"] = questions[i]["question"].replace("\"", "'")
         questions[i]["answer"] = questions[i]["answer"].replace("\"", "\\\"")
-        if questions[i]["question"] == "" and questions[i]["answer"] == "":
-            questions.pop(i)
 
 # index page
 @app.route("/")
