@@ -90,6 +90,8 @@ def openset(is_editor):
     for file in files:
         if file[-5:] == ".data":
             questionsets.append(file)
+    page += "<center><h1>Open a set of cards</h1></center><br><br>"
+    page += "<div class='form-check center shadow' style='width: 50%; padding: 30px'>"
     page += f"<form method='post' action='{action}'>"
     for file in questionsets:
         page += "<p>"
@@ -97,6 +99,8 @@ def openset(is_editor):
         page += f"<label class='form-check-label' for='{file}'>{file[:-5]}</label><br>"
         page += "</p>"
     page += "<button type='submit' class='btn btn-primary ml-0'>open</button>"
+    page += "</form>"
+    page += "</div>"
     return page + footer
 
 # create a new set of cards
