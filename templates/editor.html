@@ -13,6 +13,7 @@
     function generateQuestion(qNumber, type, question, answer) {
         var questionElem = document.createElement("div");
         questionElem.setAttribute("id", `question${qNumber}`);
+        questionElem.setAttribute("class", "smooth");
         typeTest = type == "test" ? "selected" : "";
         typeFlashcard = type == "flashcard" ? "selected" : "";
         questionElem.innerHTML += `<h3 id='header-${qNumber}'>Question ${qNumber+1}:</h3>`;
@@ -73,19 +74,23 @@
 
     // remove question on click of remove button
     function removeQuestion(number) {
-        document.getElementById(`question${number}`).remove();
-        for (let index = number+1; index < i; index++) {
-            document.getElementById(`question${index}`).setAttribute("id", `question${index-1}`);
-            document.getElementById(`header-${index}`).innerHTML = `Question ${index}:`;
-            document.getElementById(`header-${index}`).setAttribute("id", `header-${index-1}`);
-            document.getElementById(`t-${index}`).setAttribute("name", `t-${index-1}`);
-            document.getElementById(`t-${index}`).setAttribute("id", `t-${index-1}`);
-            document.getElementById(`q-${index}`).setAttribute("name", `q-${index-1}`);
-            document.getElementById(`q-${index}`).setAttribute("id", `q-${index-1}`);
-            document.getElementById(`a-${index}`).setAttribute("name", `a-${index-1}`);
-            document.getElementById(`a-${index}`).setAttribute("id", `a-${index-1}`);
-            document.getElementById(`remove-${index}`).setAttribute("onclick", `removeQuestion(${index-1})`);
-            document.getElementById(`remove-${index}`).setAttribute("id", `remove-${index-1}`);
-        }
+        document.getElementById(`question${number}`).style.transform = "scale(0)";
+        setTimeout(() => {
+            document.getElementById(`question${number}`).remove();
+            for (let index = number+1; index < i; index++) {
+                document.getElementById(`question${index}`).setAttribute("id", `question${index-1}`);
+                document.getElementById(`header-${index}`).innerHTML = `Question ${index}:`;
+                document.getElementById(`header-${index}`).setAttribute("id", `header-${index-1}`);
+                document.getElementById(`t-${index}`).setAttribute("name", `t-${index-1}`);
+                document.getElementById(`t-${index}`).setAttribute("id", `t-${index-1}`);
+                document.getElementById(`q-${index}`).setAttribute("name", `q-${index-1}`);
+                document.getElementById(`q-${index}`).setAttribute("id", `q-${index-1}`);
+                document.getElementById(`a-${index}`).setAttribute("name", `a-${index-1}`);
+                document.getElementById(`a-${index}`).setAttribute("id", `a-${index-1}`);
+                document.getElementById(`remove-${index}`).setAttribute("onclick", `removeQuestion(${index-1})`);
+                document.getElementById(`remove-${index}`).setAttribute("id", `remove-${index-1}`);
+            }
+            i--;
+        }, 200);
     }
 </script>

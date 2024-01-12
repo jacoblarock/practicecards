@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import pickle
 import os
+from multiprocessing import Process
 
 # create the flask app
 app = Flask(__name__)
@@ -138,4 +139,4 @@ def practice():
     return header + render_template("practice.html", data=questions) + footer
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
