@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request
 import pickle
 import os
-from multiprocessing import Process
-import webview
 
 # create the flask app
 app = Flask(__name__)
@@ -140,8 +138,4 @@ def practice():
     return header + render_template("practice.html", data=questions) + footer
 
 if __name__ == "__main__":
-    server = Process(target=app.run)
-    server.start()
-    webview.create_window("Flashcards", "http://localhost:5000")
-    webview.start()
-    server.join()
+    app.run()
