@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 import pickle
 import os
+from multiprocessing import Process
+import webview
 
 # create the flask app
 app = Flask(__name__)
@@ -90,6 +92,8 @@ def openset(is_editor):
     for file in files:
         if file[-5:] == ".data":
             questionsets.append(file)
+    page += "<center><h1>Open a set of cards</h1></center><br><br>"
+    page += "<div class='form-check center shadow' style='width: 50%; padding: 30px'>"
     page += f"<form method='post' action='{action}'>"
     for file in questionsets:
         page += "<p>"
@@ -97,6 +101,8 @@ def openset(is_editor):
         page += f"<label class='form-check-label' for='{file}'>{file[:-5]}</label><br>"
         page += "</p>"
     page += "<button type='submit' class='btn btn-primary ml-0'>open</button>"
+    page += "</form>"
+    page += "</div>"
     return page + footer
 
 # create a new set of cards
@@ -134,4 +140,8 @@ def practice():
     return header + render_template("practice.html", data=questions) + footer
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    server = Process(target=app.run)
+    server.start()
+    webview.create_window("Flashcards", "http://localhost:5000")
+    webview.start()
+    server.join()
