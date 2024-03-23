@@ -17,9 +17,9 @@ questions = []
 def clean_questions(questions):
     for i in range(len(questions)):
         questions[i]["question"] = questions[i]["question"].replace("\r\n", "\\n")
-        questions[i]["answer"] = questions[i]["answer"].replace("\r\n", "\\n")
+        questions[i]["answer"]["flashcard"] = questions[i]["answer"]["flashcard"].replace("\r\n", "\\n")
         questions[i]["question"] = questions[i]["question"].replace("\"", "'")
-        questions[i]["answer"] = questions[i]["answer"].replace("\"", "\\\"")
+        questions[i]["answer"]["flashcard"] = questions[i]["answer"]["flashcard"].replace("\"", "\\\"")
 
 # index page
 @app.route("/")
@@ -119,7 +119,7 @@ def create_file():
         global filename
         global questions
         filename = request.form["filename"] + ".data"
-        questions = [{"type": "flashcard", "question": "", "answer": ""}]
+        questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
     return editor()
 
 # open the practice page with the selected set of cards

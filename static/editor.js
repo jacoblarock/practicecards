@@ -12,13 +12,15 @@ function generateQuestion(qNumber, type, question, answer) {
     typeTest = type == "test" ? "selected" : "";
     typeFlashcard = type == "flashcard" ? "selected" : "";
     questionElem.innerHTML += `<h3 id='header-${qNumber}'>Question ${qNumber+1}:</h3>`;
-    questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}" id='t-${qNumber}'><option value="flashcard" ${typeFlashcard}>Flashcard</option><option value="test" ${typeTest}>Test</option></select>`;
+    questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}" id='t-${qNumber}' onChange="handleTypeChange(${qNumber}, ${type}, ${question}, ${answer})">
+                                   <option value="flashcard" ${typeFlashcard}>Flashcard</option>
+                                   <option value="test" ${typeTest}>Test</option>
+                               </select>`;
     questionElem.innerHTML += "<p>question: ";
     questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='q-${qNumber}' id='q-${qNumber}'>${question}</textarea>`;
     questionElem.innerHTML += "</p>";
-    questionElem.innerHTML += "<p>answer: ";
-    questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='a-${qNumber}' id='a-${qNumber}'>${answer}</textarea>`;
-    questionElem.innerHTML += "</p>";
+    questionElem.innerHTML += "<p>answer: </p>";
+    questionElem.innerHTML += `<div id="ac-${qNumber}"></div>`;
     questionElem.innerHTML += `<a onclick='removeQuestion(${qNumber})' class='btn btn-danger ml-0' id='remove-${qNumber}'>remove</a>`
     questionElem.innerHTML += "<br><br>";
     questionElem.addEventListener("keyup", event => {
@@ -39,6 +41,7 @@ function generateQuestion(qNumber, type, question, answer) {
         }
     });
     page.appendChild(questionElem);
+    fillAnswerContainer(qNumber, type, question, answer);
 }
 
 // generate buttons to add new question and save data
@@ -55,7 +58,7 @@ function generateButtons() {
 function addQuestion() {
 
     document.getElementById("buttons").remove();
-    generateQuestion(i, "flashcard", "", "");
+    generateQuestion(i, "flashcard", "", "", {"flashcard": "", "test": Array(0)});
 
     i++;
     generateButtons();
@@ -83,7 +86,20 @@ function removeQuestion(number) {
     }, 200);
 }
 
+function fillAnswerContainer(qNumber, type, question, answer) {
+    var answerContainer = document.getElementById("ac-" + qNumber);
+    if (type === "flashcard") {
+        answerContainer.innerHTML = `<textarea class="form-control" rows='5' style='width: 100%;' name='a-${qNumber}' id='a-${qNumber}'>${answer["flashcard"]}</textarea>`;
+    } else if (questions[i].type === "test") {
+               
+    }
+}
 
+function handleTypeChange(qNumber, type, question, answer) {
+    var state = document.getElementById("t-" + qNumber).value;
+    var answerContainer = document.getElementById("ac-" + qNumber);
+    fillAnswerContainer();
+}
 
 function init(data) {
     // get question data from page 
@@ -94,6 +110,5 @@ function init(data) {
     };
 
     generateButtons();
-    console.log("test");
 }
 
