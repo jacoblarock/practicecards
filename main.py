@@ -67,7 +67,6 @@ def save_data():
             if name[0] == "a":
                 questions[int(name[1])]["answer"]["flashcard"] = data
             if name[0] == "at":
-                print(data)
                 questions[int(name[1])]["answer"]["test"].append(data)
         # save the questions to the file
         with open(filename, "wb") as f:

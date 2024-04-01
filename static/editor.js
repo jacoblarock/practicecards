@@ -13,10 +13,7 @@ function generateQuestion(qNumber, type, question, answer) {
     typeTest = type == "test" ? "selected" : "";
     typeFlashcard = type == "flashcard" ? "selected" : "";
     questionElem.innerHTML += `<h3 id='header-${qNumber}'>Question ${qNumber+1}:</h3>`;
-    questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}" id='t-${qNumber}' onChange='handleTypeChange(${qNumber}, "${type}", "${question}", ${answerString})'>
-                                   <option value="flashcard" ${typeFlashcard}>Flashcard</option>
-                                   <option value="test" ${typeTest}>Test</option>
-                               </select>`;
+    questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}" id='t-${qNumber}' onChange='handleTypeChange(${qNumber}, "${type}", "${question}", ${answerString})'><option value="flashcard" ${typeFlashcard}>Flashcard</option><option value="test" ${typeTest}>Test</option></select>`;
     questionElem.innerHTML += "<p>question: ";
     questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='q-${qNumber}' id='q-${qNumber}' onkeyup='handleQuestionTextChange(${qNumber}, "${type}", "${question}", ${answerString})'>${question}</textarea>`;
     questionElem.innerHTML += "</p>";
@@ -103,10 +100,10 @@ function updateTestAnswer(qNumber, type, question, answer) {
     answerContainer.innerHTML = "";
     splitQuestion = question.split("\n");
     for (let i = 1; i < splitQuestion.length; i++) {
-        answerContainer.innerHTML += `<div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="at-${qNumber}" id="at-${qNumber}-${i}" value="${splitQuestion[i]}">
-            <label class="form-check-label" for="at-${qNumber}-${i}">${splitQuestion[i].substring(2)}</label>
-        </div><br>`;
+        var questionText = splitQuestion[i].substring(2);
+        console.log(answer);
+        var checked = answer["test"].includes(questionText) ? "checked" : "";
+        answerContainer.innerHTML += `<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="at-${qNumber}-${i}" id="at-${qNumber}-${i}" value="${questionText}" ${checked}><label class="form-check-label" for="at-${qNumber}-${i}">${questionText}</label></div><br>`;
     }
 }
 
