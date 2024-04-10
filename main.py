@@ -17,9 +17,9 @@ questions = []
 def clean_questions(questions):
     for i in range(len(questions)):
         questions[i]["question"] = questions[i]["question"].replace("\r\n", "\\n")
-        questions[i]["answer"] = questions[i]["answer"].replace("\r\n", "\\n")
+        questions[i]["answer"]["flashcard"] = questions[i]["answer"]["flashcard"].replace("\r\n", "\\n")
         questions[i]["question"] = questions[i]["question"].replace("\"", "'")
-        questions[i]["answer"] = questions[i]["answer"].replace("\"", "\\\"")
+        questions[i]["answer"]["flashcard"] = questions[i]["answer"]["flashcard"].replace("\"", "\\\"")
 
 # index page
 @app.route("/")
@@ -57,14 +57,17 @@ def save_data():
         # get the data from the form and save it to the questions list
         for name in request.form:
             data = request.form[name]
-            while int(name[2:]) >= len(questions):
-                questions.append({"type": "", "question": "", "answer": ""})
+            name = name.split("-")
+            while int(name[1]) >= len(questions):
+                questions.append({"type": "", "question": "", "answer": {"flashcard": "", "test": []}})
             if name[0] == "t":
-                questions[int(name[2:])]["type"] = data
+                questions[int(name[1])]["type"] = data
             if name[0] == "q":
-                questions[int(name[2:])]["question"] = data
+                questions[int(name[1])]["question"] = data
             if name[0] == "a":
-                questions[int(name[2:])]["answer"] = data
+                questions[int(name[1])]["answer"]["flashcard"] = data
+            if name[0] == "at":
+                questions[int(name[1])]["answer"]["test"].append(data)
         # save the questions to the file
         with open(filename, "wb") as f:
             pickle.dump(questions, f)
@@ -119,7 +122,7 @@ def create_file():
         global filename
         global questions
         filename = request.form["filename"] + ".data"
-        questions = [{"type": "flashcard", "question": "", "answer": ""}]
+        questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
     return editor()
 
 # open the practice page with the selected set of cards
