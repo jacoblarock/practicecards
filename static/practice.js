@@ -46,7 +46,7 @@ function showBack() {
         var choices = document.getElementsByName("choice");
         var correct = true;
         for (var i = 0; i < choices.length; i++) {
-            if (choices[i].checked != questions[qIndex]["answer"].includes(choices[i].id)) {
+            if (choices[i].checked != questions[qIndex]["answer"]["test"].includes(choices[i].id)) {
                 correct = false;
             }
         }
