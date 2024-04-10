@@ -6,16 +6,23 @@ var page = document.getElementById("main");
 var i = 0;
 
 function generateQuestion(qNumber, type, question, answer) {
-    var answerString = JSON.stringify(answer);
+    var answerString = JSON.stringify(answer).replace(/\\n/g, "\\n")
+                           .replace(/\\'/g, "\\'")
+                           .replace(/\\"/g, '\\"')
+                           .replace(/\\&/g, "\\&")
+                           .replace(/\\r/g, "\\r")
+                           .replace(/\\t/g, "\\t")
+                           .replace(/\\b/g, "\\b")
+                           .replace(/\\f/g, "\\f");
     var questionElem = document.createElement("div");
     questionElem.setAttribute("id", `question${qNumber}`);
     questionElem.setAttribute("class", "smooth");
     typeTest = type == "test" ? "selected" : "";
     typeFlashcard = type == "flashcard" ? "selected" : "";
     questionElem.innerHTML += `<h3 id='header-${qNumber}'>Question ${qNumber+1}:</h3>`;
-    questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}" id='t-${qNumber}' onChange='handleTypeChange(${qNumber}, "${type}", "${question}", ${answerString})'><option value="flashcard" ${typeFlashcard}>Flashcard</option><option value="test" ${typeTest}>Test</option></select>`;
+    questionElem.innerHTML += `<select class="form-select form-select-lg mb-3" name="t-${qNumber}" id='t-${qNumber}' onChange="handleTypeChange(${qNumber})"><option value="flashcard" ${typeFlashcard}>Flashcard</option><option value="test" ${typeTest}>Test</option></select>`;
     questionElem.innerHTML += "<p>question: ";
-    questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='q-${qNumber}' id='q-${qNumber}' onkeyup='handleQuestionTextChange(${qNumber}, "${type}", "${question}", ${answerString})'>${question}</textarea>`;
+    questionElem.innerHTML += `<textarea class="form-control" rows='5' style='width: 100%;' name='q-${qNumber}' id='q-${qNumber}' onkeyup="handleQuestionTextChange(${qNumber}, '${type}', '${question}')">${question}</textarea>`;
     questionElem.innerHTML += "</p>";
     questionElem.innerHTML += "<p>answer: </p>";
     questionElem.innerHTML += `<div id="ac-${qNumber}"></div><br>`;
@@ -72,15 +79,19 @@ function fillAnswerContainer(qNumber, type, question, answer) {
     if (type == "flashcard") {
         answerContainer.innerHTML = `<textarea class="form-control" rows='5' style='width: 100%;' name='a-${qNumber}' id='a-${qNumber}'>${answer["flashcard"]}</textarea>`;
     } else if (type == "test") {
-        updateTestAnswer(qNumber, type, question, answer);
+        updateTestAnswer(qNumber, type, question);
     }
 }
 
-function handleTypeChange(qNumber, type, question, answer) {
+function handleTypeChange(qNumber) {
+    var answer = {"flashcard": "", "test": Array(0)};
+    if (qNumber < questions.length) {
+        answer = questions[qNumber]["answer"];
+    }
     var questionText = document.getElementById(`q-${qNumber}`).value;
     var state = document.getElementById("t-" + qNumber).value;
     var answerContainer = document.getElementById("ac-" + qNumber);
-    handleQuestionTextChange(qNumber, state, questionText, answer);
+    handleQuestionTextChange(qNumber, state, questionText);
     questionText = document.getElementById(`q-${qNumber}`).value;
     if (document.getElementById(`t-${qNumber}`).value == "flashcard") {
         var splitQuestion = questionText.split("\n");
@@ -95,19 +106,22 @@ function handleTypeChange(qNumber, type, question, answer) {
     fillAnswerContainer(qNumber, state, questionText, answer);
 }
 
-function updateTestAnswer(qNumber, type, question, answer) {
+function updateTestAnswer(qNumber, type, question) {
     var answerContainer = document.getElementById("ac-" + qNumber);
     answerContainer.innerHTML = "";
     splitQuestion = question.split("\n");
     for (let i = 1; i < splitQuestion.length; i++) {
         var questionText = splitQuestion[i].substring(2);
-        console.log(answer);
+        var answer = {"flashcard": "", "test": Array(0)};
+        if (qNumber < questions.length) {
+            answer = questions[qNumber]["answer"];
+        }
         var checked = answer["test"].includes(questionText) ? "checked" : "";
         answerContainer.innerHTML += `<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" name="at-${qNumber}-${i}" id="at-${qNumber}-${i}" value="${questionText}" ${checked}><label class="form-check-label" for="at-${qNumber}-${i}">${questionText}</label></div><br>`;
     }
 }
 
-function handleQuestionTextChange(qNumber, type, question, answer) {
+function handleQuestionTextChange(qNumber, type, question) {
     var questionText = document.getElementById(`q-${qNumber}`).value;
     var splitQuestion = questionText.split("\n");
     if (document.getElementById(`t-${qNumber}`).value == "test") {
@@ -120,7 +134,7 @@ function handleQuestionTextChange(qNumber, type, question, answer) {
             }
         }
         document.getElementById(`q-${qNumber}`).value = splitQuestion.join("\n");
-        updateTestAnswer(qNumber, type, questionText, answer);
+        updateTestAnswer(qNumber, type, questionText);
     }
 }
 
