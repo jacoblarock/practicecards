@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import pickle
 import os
 
@@ -38,12 +38,18 @@ def editor():
     global filename
     # if the user has selected a set, load the questions from the file
     if request.method == "POST":
+        # try case create
         try:
-            filename = request.form["file"]
-            with open(filename, "rb") as f:
-                questions = pickle.load(f)
+            filename = request.form["filename"] + ".data"
+            questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
         except:
-            pass
+            # try case open
+            try:
+                filename = request.form["file"]
+                with open(filename, "rb") as f:
+                    questions = pickle.load(f)
+            except:
+                pass
     # clean the questions for json
     clean_questions(questions)
     return header + render_template("editor.html", data=questions) + footer
@@ -53,6 +59,7 @@ def editor():
 def save_data():
     if request.method == "POST":
         global questions
+        global filename
         questions = []
         # get the data from the form and save it to the questions list
         for name in request.form:
@@ -71,7 +78,7 @@ def save_data():
         # save the questions to the file
         with open(filename, "wb") as f:
             pickle.dump(questions, f)
-    return edit()
+    return render_template("save_data.html")
 
 # call openset with is_editor set to true
 @app.route("/open_editor")
@@ -80,7 +87,7 @@ def open_editor():
 
 # open a set of cards  
 @app.route("/open")
-def openset(is_editor):
+def openset(is_editor: bool):
     # depending on input, set the action to /editor or /practice
     if is_editor:
         action = "/editor"
@@ -110,7 +117,7 @@ def openset(is_editor):
 @app.route("/create")
 def create():
     page = header
-    page += "<form method='post' action='/create_file'>"
+    page += "<form method='post' action='/editor'>"
     page += "<input name='filename'><br>"
     page += "<button type='submit' class='btn btn-primary ml-0'>create</button>"
     return page + footer
@@ -123,7 +130,7 @@ def create_file():
         global questions
         filename = request.form["filename"] + ".data"
         questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
-    return editor()
+    return editor(true)
 
 # open the practice page with the selected set of cards
 @app.route("/open_practice")
