@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+import sqlite3
 import pickle
 import os
 
@@ -10,8 +11,16 @@ header = open("templates/header.html").read()
 footer = open("templates/footer.html").read()
 
 # global variables
-filename = ""
+setname = ""
 questions = []
+user_id = 0
+
+# create the database connection
+dbfile = "./practicecards.db"
+def create_cursor(dbfile):
+    con = sqlite3.connect(dbfile)
+    return con.cursor()
+    
 
 # replace newlines for json
 def clean_questions(questions):
@@ -35,19 +44,21 @@ def edit():
 @app.route("/editor", methods=["POST"])
 def editor():
     global questions
-    global filename
+    global setname
+    cur = create_cursor(dbfile)
     # if the user has selected a set, load the questions from the file
     if request.method == "POST":
         # try case create
         try:
-            filename = request.form["filename"] + ".data"
+            setname = request.form["filename"]
             questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
         except:
             # try case open
             try:
-                filename = request.form["file"]
-                with open(filename, "rb") as f:
-                    questions = pickle.load(f)
+                set_id = request.form["id"]
+                set_rows = cur.execute("SELECT d_questions FROM decks WHERE d_id=" + str(set_id))
+                set_data = set_rows.fetchone()
+                # questions = pickle.load(f)
             except:
                 pass
     # clean the questions for json
@@ -59,7 +70,7 @@ def editor():
 def save_data():
     if request.method == "POST":
         global questions
-        global filename
+        global setname
         questions = []
         # get the data from the form and save it to the questions list
         for name in request.form:
@@ -76,7 +87,7 @@ def save_data():
             if name[0] == "at":
                 questions[int(name[1])]["answer"]["test"].append(data)
         # save the questions to the file
-        with open(filename, "wb") as f:
+        with open(setname, "wb") as f:
             pickle.dump(questions, f)
     return render_template("save_data.html")
 
@@ -94,19 +105,17 @@ def openset(is_editor: bool):
     else:
         action = "/practice"
     page = header
-    files = os.listdir()
-    questionsets = []
+    cur = create_cursor(dbfile)
+    questionsets = [line for line in cur.execute("SELECT d_id, d_name FROM decks;")]
+    print(questionsets)
     # find all the files with the .data extension
-    for file in files:
-        if file[-5:] == ".data":
-            questionsets.append(file)
     page += "<center><h1>Open a set of cards</h1></center><br><br>"
     page += "<div class='form-check center shadow' style='width: 50%; padding: 30px'>"
     page += f"<form method='post' action='{action}'>"
-    for file in questionsets:
+    for set_data in questionsets:
         page += "<p>"
-        page += f"<input type='radio' class='form-check-input' name='file' id='{file}' value='{file}'>"
-        page += f"<label class='form-check-label' for='{file}'>{file[:-5]}</label><br>"
+        page += f"<input type='radio' class='form-check-input' name='id' id='{set_data[0]}' value='{set_data[0]}'>"
+        page += f"<label class='form-check-label' for='{set_data[0]}'>{set_data[1]}</label><br>"
         page += "</p>"
     page += "<button type='submit' class='btn btn-primary ml-0'>open</button>"
     page += "</form>"
@@ -126,9 +135,9 @@ def create():
 @app.route("/create_file", methods=["POST"])
 def create_file():
     if request.method == "POST":
-        global filename
+        global setname
         global questions
-        filename = request.form["filename"] + ".data"
+        setname = request.form["filename"] + ".data"
         questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
     return editor(true)
 
