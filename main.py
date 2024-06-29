@@ -20,7 +20,6 @@ dbfile = "./practicecards.db"
 def create_cursor(dbfile):
     con = sqlite3.connect(dbfile)
     return con.cursor()
-    
 
 # replace newlines for json
 def clean_questions(questions):
@@ -58,7 +57,7 @@ def editor():
                 set_id = request.form["id"]
                 set_rows = cur.execute("SELECT d_questions FROM decks WHERE d_id=" + str(set_id))
                 set_data = set_rows.fetchone()
-                # questions = pickle.load(f)
+                questions = set_data[0]
             except:
                 pass
     # clean the questions for json
@@ -107,7 +106,6 @@ def openset(is_editor: bool):
     page = header
     cur = create_cursor(dbfile)
     questionsets = [line for line in cur.execute("SELECT d_id, d_name FROM decks;")]
-    print(questionsets)
     # find all the files with the .data extension
     page += "<center><h1>Open a set of cards</h1></center><br><br>"
     page += "<div class='form-check center shadow' style='width: 50%; padding: 30px'>"
@@ -139,7 +137,7 @@ def create_file():
         global questions
         setname = request.form["filename"] + ".data"
         questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
-    return editor(true)
+    return editor(True)
 
 # open the practice page with the selected set of cards
 @app.route("/open_practice")
