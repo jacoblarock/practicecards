@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import pickle
 import os
+from base64 import b64encode, b64decode
 
 # create the flask app
 app = Flask(__name__)
@@ -12,14 +13,15 @@ footer = open("templates/footer.html").read()
 
 # global variables
 setname = ""
+set_id = 0
 questions = []
-user_id = 0
+user_id = "0"
 
 # create the database connection
 dbfile = "./practicecards.db"
-def create_cursor(dbfile):
+def create_connection(dbfile):
     con = sqlite3.connect(dbfile)
-    return con.cursor()
+    return con, con.cursor()
 
 # replace newlines for json
 def clean_questions(questions):
@@ -44,20 +46,28 @@ def edit():
 def editor():
     global questions
     global setname
-    cur = create_cursor(dbfile)
+    global set_id
+    con, cur = create_connection(dbfile)
+    max_id = cur.execute("SELECT MAX(d_id) FROM decks;").fetchone()[0]
+    print(max_id)
     # if the user has selected a set, load the questions from the file
     if request.method == "POST":
         # try case create
         try:
             setname = request.form["filename"]
             questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
+            set_id = int(max_id) + 1
+            print(f"INSERT INTO decks VALUES ({set_id}, 0, '', {setname});")
+            cur.execute(f"INSERT INTO decks VALUES ({set_id}, 0, '', '{setname}');")
+            con.commit()
         except:
             # try case open
             try:
-                set_id = request.form["id"]
-                set_rows = cur.execute("SELECT d_questions FROM decks WHERE d_id=" + str(set_id))
+                set_id = request.form["id"] # sets the global variable
+                set_rows = cur.execute("SELECT d_questions FROM decks WHERE d_id=" + set_id )
                 set_data = set_rows.fetchone()
-                questions = set_data[0]
+                questions = pickle.loads(b64decode(set_data[0].encode("utf-8")))
+                print(questions, type(questions))
             except:
                 pass
     # clean the questions for json
@@ -70,6 +80,7 @@ def save_data():
     if request.method == "POST":
         global questions
         global setname
+        con, cur = create_connection(dbfile)
         questions = []
         # get the data from the form and save it to the questions list
         for name in request.form:
@@ -86,16 +97,15 @@ def save_data():
             if name[0] == "at":
                 questions[int(name[1])]["answer"]["test"].append(data)
         # save the questions to the file
-        with open(setname, "wb") as f:
-            pickle.dump(questions, f)
+        print("UPDATE decks SET d_questions = '" + b64encode(pickle.dumps(questions)).decode("utf-8") + "' WHERE d_id = " + str(set_id) + ";")
+        cur.execute("UPDATE decks SET d_questions = '" + b64encode(pickle.dumps(questions)).decode("utf-8") + "' WHERE d_id = " + str(set_id) + ";")
+        con.commit()
     return render_template("save_data.html")
 
 # call openset with is_editor set to true
 @app.route("/open_editor")
 def open_editor():
-    return openset(True)
-
-# open a set of cards  
+    return openset(True) # open a set of cards  
 @app.route("/open")
 def openset(is_editor: bool):
     # depending on input, set the action to /editor or /practice
@@ -104,7 +114,7 @@ def openset(is_editor: bool):
     else:
         action = "/practice"
     page = header
-    cur = create_cursor(dbfile)
+    con, cur = create_connection(dbfile)
     questionsets = [line for line in cur.execute("SELECT d_id, d_name FROM decks;")]
     # find all the files with the .data extension
     page += "<center><h1>Open a set of cards</h1></center><br><br>"
@@ -135,9 +145,13 @@ def create_file():
     if request.method == "POST":
         global setname
         global questions
+        global set_id
+        con, cur = create_connection(dbfile)
+        max_id = cur.execute("SELECT MAX(d_id) FROM decks;").fetchone()[0]
+        print(max_id, type(max_id))
         setname = request.form["filename"] + ".data"
         questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
-    return editor(True)
+    return editor()
 
 # open the practice page with the selected set of cards
 @app.route("/open_practice")
