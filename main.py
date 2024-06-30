@@ -49,7 +49,6 @@ def editor():
     global set_id
     con, cur = create_connection(dbfile)
     max_id = cur.execute("SELECT MAX(d_id) FROM decks;").fetchone()[0]
-    print(max_id)
     # if the user has selected a set, load the questions from the file
     if request.method == "POST":
         # try case create
@@ -57,7 +56,6 @@ def editor():
             setname = request.form["filename"]
             questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
             set_id = int(max_id) + 1
-            print(f"INSERT INTO decks VALUES ({set_id}, 0, '', {setname});")
             cur.execute(f"INSERT INTO decks VALUES ({set_id}, 0, '', '{setname}');")
             con.commit()
         except:
@@ -67,7 +65,6 @@ def editor():
                 set_rows = cur.execute("SELECT d_questions FROM decks WHERE d_id=" + set_id )
                 set_data = set_rows.fetchone()
                 questions = pickle.loads(b64decode(set_data[0].encode("utf-8")))
-                print(questions, type(questions))
             except:
                 pass
     # clean the questions for json
@@ -97,7 +94,6 @@ def save_data():
             if name[0] == "at":
                 questions[int(name[1])]["answer"]["test"].append(data)
         # save the questions to the file
-        print("UPDATE decks SET d_questions = '" + b64encode(pickle.dumps(questions)).decode("utf-8") + "' WHERE d_id = " + str(set_id) + ";")
         cur.execute("UPDATE decks SET d_questions = '" + b64encode(pickle.dumps(questions)).decode("utf-8") + "' WHERE d_id = " + str(set_id) + ";")
         con.commit()
     return render_template("save_data.html")
@@ -106,6 +102,7 @@ def save_data():
 @app.route("/open_editor")
 def open_editor():
     return openset(True) # open a set of cards  
+
 @app.route("/open")
 def openset(is_editor: bool):
     # depending on input, set the action to /editor or /practice
@@ -148,7 +145,6 @@ def create_file():
         global set_id
         con, cur = create_connection(dbfile)
         max_id = cur.execute("SELECT MAX(d_id) FROM decks;").fetchone()[0]
-        print(max_id, type(max_id))
         setname = request.form["filename"] + ".data"
         questions = [{"type": "flashcard", "question": "", "answer": {"flashcard": "", "test": []}}]
     return editor()
@@ -162,9 +158,12 @@ def open_practice():
 @app.route("/practice", methods=['POST'])
 def practice():
     if request.method == "POST":
-        filename = request.form["file"]
-    with open(filename, "rb") as f:
-        questions = pickle.load(f)
+        global questions
+        con, cur = create_connection(dbfile)
+        set_id = request.form["id"] # sets the global variable
+        set_rows = cur.execute("SELECT d_questions FROM decks WHERE d_id=" + set_id )
+        set_data = set_rows.fetchone()
+        questions = pickle.loads(b64decode(set_data[0].encode("utf-8")))
     clean_questions(questions)
     return header + render_template("practice.html", data=questions) + footer
 
