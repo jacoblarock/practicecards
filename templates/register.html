@@ -1,0 +1,29 @@
+<br>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
+<script>
+	function hashAndVerify(obj) {
+		var pwdObj = document.getElementById('pwd');
+		var repeatObj = document.getElementById('pwdRpt'); 
+		var hashObj = new jsSHA("SHA-512", "TEXT", {numRounds: 1});
+		if (pwdObj.value === repeatObj.value) {
+			hashObj.update(pwdObj.value);
+			var hash = hashObj.getHash("HEX");
+			pwdObj.value = hash;
+		} else {
+			alert("The passwords must match!");
+		}
+	} 
+</script>
+<div class='form-check center shadow' style='width: 50%; padding: 30px'>
+	<center>
+		<form method='post' action='/create_user'>
+			<p>Username:</p>
+			<input name="username" class="form-input" id="username" type="text" /><br><br>
+			<p>Password:</p>
+			<input type="password" class="form-input" id="pwd" name="password" /><br><br>
+			<p>Repeat password:</p>
+			<input type="password" class="form-input" id="pwdRpt" name="password-repeat" /><br><br>
+			<button onclick="hashAndVerify(this)" class="btn btn-primary ml-0" type="submit">Register</button><br>
+		</form>
+	</center>
+</div>

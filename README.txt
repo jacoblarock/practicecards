@@ -1,4 +1,7 @@
 BUILDING
+
+Building practicecards makes a portable binary with wrapped dependencies.
+
 In Linux/MacOS, practicecards can be built by running the make.sh script.
 This will create two directories in the parent directory (outside of
 practicecards) build and dist. The finished executable is in dist unter main.
